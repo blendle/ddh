@@ -47,6 +47,7 @@ func main() {
 		config.Cmd = strings.Split(os.Getenv("CMD"), " ")
 	}
 	create := docker.CreateContainerOptions{Name: container_name, Config: &config}
+	hostConfig := docker.HostConfig{PublishAllPorts: true}
 
 	deploy := make(chan int, 100)
 
@@ -60,7 +61,7 @@ func main() {
 			fmt.Println("Creating new container:", container_name)
 			container, _ := client.CreateContainer(create)
 			fmt.Println("Starting container:", container.ID)
-			client.StartContainer(container.ID, nil)
+			client.StartContainer(container.ID, &hostConfig)
 		}
 	}()
 	m := martini.Classic()
