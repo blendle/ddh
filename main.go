@@ -47,17 +47,26 @@ func main() {
 	}
 	create := docker.CreateContainerOptions{Name: container_name, Config: &config}
 
+
+	deploy := make(chan int, 100)
+
+  go func() {
+  	for {
+  		_ = <- deploy
+			fmt.Println("Pulling image:", image_name)
+			client.PullImage(image, auth)
+			fmt.Println("Removing old container:", container_name)
+			client.RemoveContainer(docker.RemoveContainerOptions{ID: container_name, Force: true})
+			fmt.Println("Creating new container:", container_name)
+			container, _ := client.CreateContainer(create)
+			fmt.Println("Starting container:", container.ID)
+			client.StartContainer(container.ID, nil)
+		}
+  }()
 	m := martini.Classic()
 	m.Get(os.Getenv("ENDPOINT"), func() string {
-		fmt.Println("Pulling image:", image_name)
-		client.PullImage(image, auth)
-		fmt.Println("Removing old container:", container_name)
-		client.RemoveContainer(docker.RemoveContainerOptions{ID: container_name, Force: true})
-		fmt.Println("Creating new container:", container_name)
-		container, _ := client.CreateContainer(create)
-		fmt.Println("Starting container:", container.ID)
-		fmt.Println(client.StartContainer(container.ID, nil))
-		return "OK"
+    deploy <- 0
+		return "OK\n"
 	})
 	m.RunOnAddr(":8080")
 }
