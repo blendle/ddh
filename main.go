@@ -10,6 +10,7 @@ import (
 )
 
 func main() {
+	endpoint := os.Getenv("ENDPOINT")
 	image_name := os.Getenv("IMAGE")
 	container_name := os.Getenv("CONTAINER_NAME")
 
@@ -21,8 +22,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	endpoint := os.Getenv("DOCKERSOCKET")
-	client, _ := docker.NewClient(endpoint)
+	dockerURI := os.Getenv("DOCKERSOCKET")
+	client, _ := docker.NewClient(dockerURI)
 
 	err := client.Ping()
 	if err != nil {
@@ -47,12 +48,11 @@ func main() {
 	}
 	create := docker.CreateContainerOptions{Name: container_name, Config: &config}
 
-
 	deploy := make(chan int, 100)
 
-  go func() {
-  	for {
-  		_ = <- deploy
+	go func() {
+		for {
+			_ = <-deploy
 			fmt.Println("Pulling image:", image_name)
 			client.PullImage(image, auth)
 			fmt.Println("Removing old container:", container_name)
@@ -62,10 +62,10 @@ func main() {
 			fmt.Println("Starting container:", container.ID)
 			client.StartContainer(container.ID, nil)
 		}
-  }()
+	}()
 	m := martini.Classic()
-	m.Get(os.Getenv("ENDPOINT"), func() string {
-    deploy <- 0
+	m.Get(endpoint, func() string {
+		deploy <- 0
 		return "OK\n"
 	})
 	m.RunOnAddr(":8080")
