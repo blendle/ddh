@@ -11,8 +11,8 @@ import (
 
 func main() {
 	endpoint := os.Getenv("ENDPOINT")
-	image_name := os.Getenv("IMAGE")
-	container_name := os.Getenv("CONTAINER_NAME")
+	imageName := os.Getenv("IMAGE")
+	containerName := os.Getenv("CONTAINER_NAME")
 
 	username := os.Getenv("USERNAME")
 	password := os.Getenv("PASSWORD")
@@ -32,7 +32,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	image := docker.PullImageOptions{Repository: image_name, Tag: "latest"}
+	image := docker.PullImageOptions{Repository: imageName, Tag: "latest"}
 	auth := docker.AuthConfiguration{Username: username, Password: password}
 
 	passes := strings.Split(os.Getenv("PASS_ENV"), " ")
@@ -41,24 +41,23 @@ func main() {
 		envs[i] = env + "=" + os.Getenv(env)
 	}
 
-	config := docker.Config{Image: image_name, Env: envs}
+	config := docker.Config{Image: imageName, Env: envs}
 	if len(os.Getenv("CMD")) != 0 {
 		// TODO: Parse this CMD string as bashlike:
 		config.Cmd = strings.Split(os.Getenv("CMD"), " ")
 	}
-	create := docker.CreateContainerOptions{Name: container_name, Config: &config}
+	create := docker.CreateContainerOptions{Name: containerName, Config: &config}
 	hostConfig := docker.HostConfig{PublishAllPorts: true}
-
 	deploy := make(chan int, 100)
 
 	go func() {
 		for {
 			_ = <-deploy
-			fmt.Println("Pulling image:", image_name)
+			fmt.Println("Pulling image:", imageName)
 			client.PullImage(image, auth)
-			fmt.Println("Removing old container:", container_name)
-			client.RemoveContainer(docker.RemoveContainerOptions{ID: container_name, Force: true})
-			fmt.Println("Creating new container:", container_name)
+			fmt.Println("Removing old container:", containerName)
+			client.RemoveContainer(docker.RemoveContainerOptions{ID: containerName, Force: true})
+			fmt.Println("Creating new container:", containerName)
 			container, _ := client.CreateContainer(create)
 			fmt.Println("Starting container:", container.ID)
 			client.StartContainer(container.ID, &hostConfig)
