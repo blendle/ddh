@@ -8,7 +8,7 @@ ENV DOCKERSOCKET unix:///var/run/docker.sock
 ENV ENDPOINT /
 ENV IMAGE ubuntu
 ENV CONTAINER_NAME ubuntu-test
-ENV CMD sleep 500
+#ENV CMD sleep 500
 
 #ENV USERNAME you
 #ENV PASSWORD secret
