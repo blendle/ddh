@@ -48,6 +48,12 @@ func main() {
 	}
 	create := docker.CreateContainerOptions{Name: containerName, Config: &config}
 	hostConfig := docker.HostConfig{PublishAllPorts: true}
+
+	links := os.Getenv("LINKS")
+	if len(links) != 0 {
+		hostConfig.Links = strings.Split(links, " ")
+	}
+
 	deploy := make(chan int, 100)
 
 	go func() {
