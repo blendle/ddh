@@ -64,13 +64,21 @@ func main() {
 			fmt.Println("Removing old container:", containerName)
 			client.RemoveContainer(docker.RemoveContainerOptions{ID: containerName, Force: true})
 			fmt.Println("Creating new container:", containerName)
-			container, _ := client.CreateContainer(create)
-			fmt.Println("Starting container:", container.ID)
-			client.StartContainer(container.ID, &hostConfig)
+			container, err := client.CreateContainer(create)
+			if err != nil {
+				fmt.Println("Unable to create new container:", err)
+			} else {
+				fmt.Println("Starting container:", container.ID)
+				client.StartContainer(container.ID, &hostConfig)
+			}
 		}
 	}()
 	m := martini.Classic()
 	m.Get(endpoint, func() string {
+		deploy <- 0
+		return "OK\n"
+	})
+	m.Post(endpoint, func() string {
 		deploy <- 0
 		return "OK\n"
 	})
