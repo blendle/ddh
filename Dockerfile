@@ -10,12 +10,14 @@ ENV IMAGE ubuntu
 ENV CONTAINER_NAME ubuntu-test
 #ENV CMD sleep 500
 
+
 #ENV USERNAME you
 #ENV PASSWORD secret
 
+#ENV LINKS "your-db:db something-redis:redis"
 ENV PASS_ENV PASS_ENV
 
-
+EXPOSE 8080
 WORKDIR /gopath/src/app
 ADD . /gopath/src/app/
 
