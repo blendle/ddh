@@ -8,6 +8,7 @@ ENV DOCKERSOCKET unix:///var/run/docker.sock
 ENV ENDPOINT /
 ENV IMAGE ubuntu
 ENV CONTAINER_NAME ubuntu-test
+ENV PUBLISH_PORT 9292
 #ENV CMD sleep 500
 
 
