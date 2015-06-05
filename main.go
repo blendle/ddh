@@ -16,6 +16,7 @@ func main() {
 
 	username := os.Getenv("USERNAME")
 	password := os.Getenv("PASSWORD")
+	publishPort := os.Getenv("PUBLISH_PORT")
 
 	if len(username) == 0 || len(password) == 0 {
 		fmt.Println("missing USERNAME/PASSWORD env!")
@@ -47,7 +48,11 @@ func main() {
 		config.Cmd = strings.Split(os.Getenv("CMD"), " ")
 	}
 	create := docker.CreateContainerOptions{Name: containerName, Config: &config}
-	hostConfig := docker.HostConfig{PublishAllPorts: true}
+
+	portBindings := map[docker.Port][]docker.PortBinding{
+        docker.Port(publishPort + "/tcp"): []docker.PortBinding{docker.PortBinding{HostPort: publishPort }}}
+
+    hostConfig := docker.HostConfig{ PortBindings:portBindings }
 
 	links := os.Getenv("LINKS")
 	if len(links) != 0 {
