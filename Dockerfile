@@ -8,7 +8,6 @@ ENV DOCKERSOCKET unix:///var/run/docker.sock
 ENV ENDPOINT /
 ENV IMAGE ubuntu
 ENV CONTAINER_NAME ubuntu-test
-ENV PUBLISH_PORT 9292
 #ENV CMD sleep 500
 
 
@@ -16,6 +15,7 @@ ENV PUBLISH_PORT 9292
 #ENV PASSWORD secret
 
 #ENV LINKS "your-db:db something-redis:redis"
+#ENV PUBLISH_PORT 8888
 ENV PASS_ENV PASS_ENV
 
 EXPOSE 8080

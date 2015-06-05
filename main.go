@@ -49,10 +49,15 @@ func main() {
 	}
 	create := docker.CreateContainerOptions{Name: containerName, Config: &config}
 
-	portBindings := map[docker.Port][]docker.PortBinding{
-        docker.Port(publishPort + "/tcp"): []docker.PortBinding{docker.PortBinding{HostPort: publishPort }}}
+	hostConfig := docker.HostConfig{ PublishAllPorts: true }
 
-    hostConfig := docker.HostConfig{ PortBindings:portBindings }
+    if len(publishPort) > 0 {
+		portBindings := map[docker.Port][]docker.PortBinding{
+			docker.Port(publishPort + "/tcp"): []docker.PortBinding{
+				docker.PortBinding{
+					HostPort: publishPort}}}
+        hostConfig.PortBindings = portBindings
+    } 
 
 	links := os.Getenv("LINKS")
 	if len(links) != 0 {
