@@ -1,3 +1,8 @@
+:warning: **NOTE:** This project has been deprecated. It is outdated, and no
+longer in use in any of our projects.
+
+---
+
 Docker Deploy Hook
 ==================
 
